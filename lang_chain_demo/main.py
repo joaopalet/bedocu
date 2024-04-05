@@ -6,3 +6,4 @@ message = "What are some of the pros and cons of Python as a programming languag
 res = model.invoke(message)
 
 print(res)
+
