@@ -7,5 +7,9 @@
   - `source .venv/bin/activate`
 - Install dependencies
   - `pip install -r requirements.txt`
+- Login to `gcloud`
+  - `gcloud auth application-default login`
+  - `gcloud config set project fdc-gen-ai-test`
+  - `gcloud auth application-default set-quota-project fdc-gen-ai-test`
 - Run example
   - `python3 example.py`
