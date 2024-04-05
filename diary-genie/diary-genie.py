@@ -1,6 +1,16 @@
 import os
 
 from langchain_google_vertexai import VertexAI
+from langchain_community.vectorstores import Chroma
+from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
+
+
+
+# Create Embeddings and Initialize Chroma
+embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=embedding_function)
+
+
 
 model = VertexAI(model_name="text-unicorn")
 
@@ -18,24 +28,23 @@ def get_answer(entries, query):
     return res
 
 
-entries = """
-    {
-        "date": "01-09-2023",
-        "text": "Today was sunny and I ate a beef hamburger"
-    },
-    {
-        "date": "12-10-2023",
-        "text": "Today it rained and I broke my leg"
-    },
-    {
-        "date": "23-11-2023",
-        "text": "Today it was sunny and I found money on the ground"
-    },
-    {
-        "date": "04-02-2023",
-        "text": "Today it rained and I had an accident"
-    }
-"""
-query = input("What do you want to know?\n  -> ")  # "When did I become richer?"
-project_summary = get_answer(entries, query)
-print("\n" + project_summary)
+def askFM():
+    while 1:
+        prompt = input("Enter a question about your diary: ")
+        results = vectorstore.similarity_search(prompt)
+        
+        context_for_llm = []
+        ii = 0
+        for i in range(len(results)): 
+            print(i)
+            entry = "{" + "\"date\": \"" + results[i].metadata["date"] + "\", \"text\": \""+ results[i].page_content + "\"}"
+            ii+=1
+            context_for_llm +=  [entry]
+            if i > 4: # number of top results to feed to the LLM for context
+                break
+        
+        out = get_answer(context_for_llm, prompt)
+        print(out)
+        
+        
+askFM()
