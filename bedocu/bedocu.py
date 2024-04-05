@@ -4,7 +4,7 @@ from langchain_google_vertexai import VertexAI
 
 model = VertexAI(model_name="gemini-pro")
 
-file_num_limit = 40
+file_num_limit = 60
 
 
 def get_project_summary(file_summaries):
@@ -18,6 +18,7 @@ def get_project_summary(file_summaries):
 
 
 def get_file_summary(file_path):
+    print("Processing file:", file_path)
     f = open(file_path, "r")
     contents = f.read()
     message = (
@@ -33,7 +34,13 @@ def get_all_file_paths(directory):
     file_paths = []
     processed_files_count = 0
     for root, _, files in os.walk(directory):
+        if ".git" in root:
+            continue
+        if "chroma_db" in root:
+            continue
         for file in files:
+            if ".md" in file:
+                continue
             file_path = os.path.join(root, file)
             file_paths.append(file_path)
             processed_files_count += 1
@@ -43,7 +50,7 @@ def get_all_file_paths(directory):
     return file_paths
 
 
-directory = "./example-projects/website-builder"
+directory = "/Users/joaopalet/Desktop/hackathons/ai-agent/bedocu/bedocu"
 file_paths = get_all_file_paths(directory)
 file_summaries = {}
 for file_path in file_paths:
@@ -51,4 +58,5 @@ for file_path in file_paths:
     file_summaries[file_path] = file_summary
 
 project_summary = get_project_summary(file_summaries)
-print(project_summary)
+with open("out.md", "w") as file:
+    file.write(project_summary)
