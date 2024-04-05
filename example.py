@@ -12,12 +12,12 @@ def getFileSummary(filepath):
     f = open(filepath, "r")
     contents = f.read()
     message = (
-        "This is the contents of a file. Based on it, generate a summary of its functionality. File: "
+        "I will give you the contents of a file and I want you to return me the summary of its content in simple plain text. The file content is: "
         + contents
     )
     res = model.invoke(message)
     return res
 
 
-res = "./example-project/website-builder/app/__init__.py"
+res = getFileSummary("./example-project/website-builder/app/__init__.py")
 print(res)
